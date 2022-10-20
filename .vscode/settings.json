@@ -1,0 +1,12 @@
+{
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBorder": "#25320e"
+  },
+  "editor.formatOnSave": true,
+  "prettier.tabWidth": 2
+}
