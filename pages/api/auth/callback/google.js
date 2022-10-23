@@ -1,28 +1,13 @@
 export default async function handler(req, res) {
+  const GOOGLE_CONF_URI = process.env.GOOGLE_CONF_URI
   const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
   const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
   const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI
-  const confGoogle = await fetch("https://accounts.google.com/.well-known/openid-configuration").then((response) =>
-    response.json()
-  )
 
-  const details = {
-    grant_type: "authorization_code",
-    code: req.query.code,
-    redirect_uri: GOOGLE_REDIRECT_URI,
-  }
-
-  let property
-  let encodedKey
-  let encodedValue
-  let formBody = []
-  for (property in details) {
-    encodedKey = encodeURIComponent(property)
-    encodedValue = encodeURIComponent(details[property])
-    formBody.push(encodedKey + "=" + encodedValue)
-  }
+  const confGoogle = await fetch(GOOGLE_CONF_URI).then((response) => response.json())
 
   const oidcCredentials = `${GOOGLE_CLIENT_ID}:${GOOGLE_CLIENT_SECRET}`
+  const formBody = [`grant_type=authorization_code`, `code=${req.query.code}`, `redirect_uri=${GOOGLE_REDIRECT_URI}`]
   const data = await fetch(confGoogle.token_endpoint, {
     method: "POST",
     headers: {
