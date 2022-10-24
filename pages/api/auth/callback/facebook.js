@@ -10,7 +10,6 @@ export default async function handler(req, res) {
   const REDIRECT_URI = process.env[`${PROVIDER}_REDIRECT_URI`]
 
   // const conf = await fetch(CONF_URI).then((response) => response.json())
-
   const oidcCredentials = `${CLIENT_ID}:${CLIENT_SECRET}`
   const formBody = [`grant_type=authorization_code`, `code=${req.query.code}`, `redirect_uri=${REDIRECT_URI}`]
   const data = await fetch("https://graph.facebook.com/oauth/access_token", {

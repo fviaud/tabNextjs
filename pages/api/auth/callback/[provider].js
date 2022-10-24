@@ -50,7 +50,7 @@ export default async function handler(req, res) {
       expiresIn: 3600 * 24 * 30 * 6,
       algorithm: "RS256",
     })
-    res.setHeader("Set-Cookie", serialize("token", token, { httpOnly: true }))
+    res.setHeader("Set-Cookie", serialize("token", token, { httpOnly: true, path: "/" }))
     res.json(user)
   } else {
     res.status(400).json("Error acces oAuth")
