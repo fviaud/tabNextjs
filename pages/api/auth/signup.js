@@ -1,33 +1,18 @@
 // api/users.js
-import bcrypt from "bcrypt"
+import { checkUser } from "actions/users"
+// import bcrypt from "bcrypt"
 
 import dbConnect from "lib/dbConnect"
-import User from "models/User"
+// import User from "models/User"
 
 export default async function handler(req, res) {
   const { method } = req
-  const { name, email, password } = req.body
-
-  await dbConnect()
-
+  const { email, password } = req.body
   switch (method) {
     case "POST":
-      const newUser = new User({
-        name,
-        email,
-        password: await bcrypt.hash(password, 8),
-      })
-      newUser.save((err, user) => {
-        if (err) {
-          if (err.code === 11000) {
-            res.status(400).json("Email déjà utilisé")
-          } else {
-            res.status(400).json({ success: false })
-          }
-        } else {
-          res.json(user)
-        }
-      })
+      const response = await checkUser(email, password)
+      console.log(response)
+      res.status(400).json(response)
       break
     default:
       res.status(400).json({ success: false })

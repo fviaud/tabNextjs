@@ -23,7 +23,6 @@ export default async function handler(req, res) {
               expiresIn: 3600 * 24 * 30 * 6,
               algorithm: "RS256",
             })
-            // res.cookie("token", token, { httpOnly: true })
             res.setHeader("Set-Cookie", serialize("token", token, { httpOnly: true }))
             res.json(user)
           } else {
