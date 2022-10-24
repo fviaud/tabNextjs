@@ -10,13 +10,18 @@ export async function checkUser(email, password, picture) {
     ...(password && { password: await bcrypt.hash(password, 8) }),
     picture,
   })
-  try {
-    const user = await newUser.save()
-    const { _id: id } = user
-    return { success: true, id }
-  } catch (error) {
-    if (error.code === 11000) {
-      return { success: false, message: "Email already used" }
-    }
-  }
+  // try {
+  //   const user = await newUser.save()
+  //   const { _id: id } = user
+  //   return { success: true, id }
+  // } catch (error) {
+  //   if (error.code === 11000) {
+  //     return { success: false, message: "Email already used" }
+  //   } else {
+  //     return { success: false, message: "Error api user" }
+  //   }
+  // }
+
+  const user = await newUser.save().then((user) => user).catch
+  return user
 }

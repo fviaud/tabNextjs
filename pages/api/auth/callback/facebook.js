@@ -1,3 +1,5 @@
+import { checkUser } from "actions/users"
+
 export default async function handler(req, res) {
   const provider = "facebook"
   const PROVIDER = provider.toUpperCase()
@@ -25,5 +27,10 @@ export default async function handler(req, res) {
     headers: { Authorization: `Bearer ${data.access_token}` },
   }).then((r) => r.json())
 
-  res.status(200).json(curentUser)
+  if (curentUser.email) {
+    const response = await checkUser(curentUser.email, undefined, curentUser.picture.data.url)
+    res.status(200).json(response)
+  } else {
+    res.status(200).json(curentUser)
+  }
 }

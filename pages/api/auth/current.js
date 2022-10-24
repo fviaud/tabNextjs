@@ -1,6 +1,6 @@
 import jsonwebtoken from "jsonwebtoken"
 import dbConnect from "lib/dbConnect"
-import User from "models/User"
+import User from "models/user"
 import { keyPub } from "keys"
 
 export default async function handler(req, res) {
