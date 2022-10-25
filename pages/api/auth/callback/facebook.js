@@ -1,4 +1,8 @@
-import { checkUser } from "actions/users"
+import { serialize } from "cookie"
+import User from "models/user"
+import jsonwebtoken from "jsonwebtoken"
+import dbConnect from "lib/dbConnect"
+import { key } from "keys"
 
 export default async function handler(req, res) {
   const provider = "facebook"
@@ -27,9 +31,27 @@ export default async function handler(req, res) {
   }).then((r) => r.json())
 
   if (curentUser.email) {
-    const response = await checkUser(curentUser.email, undefined, curentUser.picture.data.url)
-    res.status(200).json(response)
+    try {
+      await dbConnect()
+      let user = await User.findOne({ email: curentUser.email }).exec()
+      if (!user) {
+        const newUser = new User({
+          email: curentUser.email,
+          picture: curentUser.picture.data.url,
+        })
+        user = await newUser.save()
+      }
+      const token = jsonwebtoken.sign({}, await key(), {
+        subject: user._id.toString(),
+        expiresIn: 3600 * 24 * 30 * 6,
+        algorithm: "RS256",
+      })
+      res.setHeader("Set-Cookie", serialize("token", token, { httpOnly: true, path: "/" }))
+      res.status(200).json({ success: true })
+    } catch (error) {
+      res.status(400).json({ error: error })
+    }
   } else {
-    res.status(200).json(curentUser)
+    res.status(400).json("Error acces oAuth")
   }
 }

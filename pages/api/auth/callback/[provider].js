@@ -32,26 +32,26 @@ export default async function handler(req, res) {
   }).then((r) => r.json())
 
   if (curentUser.email) {
-    await dbConnect()
-    let user = await User.findOne({ email: curentUser.email }).exec()
-    if (!user) {
-      const newUser = new User({
-        email: curentUser.email,
-        picture: curentUser.picture,
-      })
-      try {
+    try {
+      await dbConnect()
+      let user = await User.findOne({ email: curentUser.email }).exec()
+      if (!user) {
+        const newUser = new User({
+          email: curentUser.email,
+          picture: curentUser.picture,
+        })
         user = await newUser.save()
-      } catch (error) {
-        res.status(400).json("Error acces api")
       }
+      const token = jsonwebtoken.sign({}, await key(), {
+        subject: user._id.toString(),
+        expiresIn: 3600 * 24 * 30 * 6,
+        algorithm: "RS256",
+      })
+      res.setHeader("Set-Cookie", serialize("token", token, { httpOnly: true, path: "/" }))
+      res.status(200).json({ success: true })
+    } catch (error) {
+      res.status(400).json({ error: error })
     }
-    const token = jsonwebtoken.sign({}, await key(), {
-      subject: user._id.toString(),
-      expiresIn: 3600 * 24 * 30 * 6,
-      algorithm: "RS256",
-    })
-    res.setHeader("Set-Cookie", serialize("token", token, { httpOnly: true, path: "/" }))
-    res.json(user)
   } else {
     res.status(400).json("Error acces oAuth")
   }
